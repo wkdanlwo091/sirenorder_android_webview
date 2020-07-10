@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "718918877618",
+    "firebase_url": "https://sirenorderclient.firebaseio.com",
+    "project_id": "sirenorderclient",
+    "storage_bucket": "sirenorderclient.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:718918877618:android:5122a823289d16ca2124ab",
+        "android_client_info": {
+          "package_name": "com.example.sirenorder"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "718918877618-f6tbasouhuig1svvp61sbt85se3jvbub.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.sirenorder",
+            "certificate_hash": "5ac1463cb9599668eb0ca3d938f362943aba9bc1"
+          }
+        },
+        {
+          "client_id": "718918877618-16ufvqhoaam7uo3pofb2jg2cmg0pdkog.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBkMzuAWeYGsROj79oypttFHH8q82LUXOI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "718918877618-16ufvqhoaam7uo3pofb2jg2cmg0pdkog.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
