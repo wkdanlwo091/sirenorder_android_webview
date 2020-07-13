@@ -44,7 +44,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
             Intent intent = new Intent(this, MainActivity.class);// intent란 컴포넌트간에 통신을 하기위한 객체
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);//
+            PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
+            // pendingIntent란 수행시킬 작업 및 인텐트(실행의도)와 및 그것을 수행하는 주체를 지정하기 위한 정보를 명시 할 수 있는 기능의 클래스라고 보면 된다.
+
             String channelId = "Channel ID";
             Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
             NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, channelId)
