@@ -2,6 +2,7 @@ package com.example.sirenorder;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+
 import android.os.Bundle;
 import android.util.Log;
 import android.webkit.JavascriptInterface;
@@ -97,7 +98,7 @@ class HttpClient {
     private void setBody(HttpURLConnection connection) {
 
         String parameter = builder.getParameters();
-        if ( parameter != null && parameter.length() > 0 ) {
+        if (parameter != null && parameter.length() > 0) {
             OutputStream outputStream = null;
             try {
                 outputStream = connection.getOutputStream();
@@ -107,7 +108,7 @@ class HttpClient {
                 e.printStackTrace();
             } finally {
                 try {
-                    if ( outputStream != null )
+                    if (outputStream != null)
                         outputStream.close();
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -133,16 +134,17 @@ class HttpClient {
         try {
             reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             String line = null;
-            while ( (line = reader.readLine()) != null ) {
+            while ((line = reader.readLine()) != null) {
                 result += line;
             }
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
             try {
-                if(reader != null)
+                if (reader != null)
                     reader.close();
-            } catch (IOException e) {}
+            } catch (IOException e) {
+            }
         }
 
         return result;
@@ -163,7 +165,7 @@ class HttpClient {
         }
 
         public Builder(String method, String url) {
-            if(method == null) {
+            if (method == null) {
                 method = "GET";
             }
             this.method = method;
@@ -193,15 +195,15 @@ class HttpClient {
             Iterator<String> keys = getKeys();
 
             String key = "";
-            while ( keys.hasNext() ) {
+            while (keys.hasNext()) {
                 key = keys.next();
                 parameters.append(String.format("%s=%s", key, this.parameters.get(key)));
                 parameters.append("&");
             }
 
             String params = parameters.toString();
-            if ( params.length() > 0 ) {
-                params = params.substring( 0, params.length() - 1 );
+            if (params.length() > 0) {
+                params = params.substring(0, params.length() - 1);
             }
 
             return params;
@@ -228,42 +230,104 @@ public class MainActivity extends AppCompatActivity {
     private String idPassword;
     private String myToken;
 
-    public void request(String request,String urlStr){
+    public void request2(String urlStr){
 
+
+
+        try {
+            URL url = new URL("http:192.168.43.161:80/androidData");
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            try {
+                conn.setRequestMethod("POST");
+            } catch (ProtocolException e) {
+                e.printStackTrace();
+                Log.d("---",  e.toString());
+
+            }
+
+            conn.setConnectTimeout(5000);
+            conn.setDoOutput(true);
+            conn.setDoInput(true);
+
+            OutputStream outputStream = null;
+
+            try {
+                outputStream = conn.getOutputStream();
+                outputStream.write("id=01082834207&password=1234&token=1234".getBytes("UTF-8"));
+                outputStream.flush();
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.d("---",  e.toString());
+
+            } finally {
+                try {
+                    if (outputStream != null)
+                        outputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    Log.d("---",  e.toString());
+
+                }
+            }
+
+            try {
+                int respondsecode = conn.getResponseCode();
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.d("---",  e.toString());
+
+            }
+
+            String result = "";
+            BufferedReader reader = null;
+            try {
+                reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                String line = null;
+                while ((line = reader.readLine()) != null) {
+                    result += line;
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    if (reader != null)
+                        reader.close();
+                } catch (IOException e) {
+                }
+            }
+
+            conn.disconnect();
+
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+            Log.d("---",  e.toString());
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            Log.d("---",  e.toString());
+
+        }
+
+
+
+    }
+
+    public void request(String password, String id, String token, String urlStr) {
         HttpClient.Builder http = new HttpClient.Builder("POST", "http:192.168.43.161:80/androidData");
 
         Map<String, String> maps = new HashMap<String, String>();
-        maps.put("token", "1234");
-        maps.put("id", "llll");
+        maps.put("token", token);
+        maps.put("id", id);
+        maps.put("password", password);
 
 
-        http.addAllParameters(maps );
-
-
+        http.addAllParameters(maps);
         HttpClient post = http.create();
         post.request();
 
 
 
-        try{
-            URL url = new URL(urlStr);
-
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();//url 연결
-            if(conn != null){
-                conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-                conn.setConnectTimeout(5000);
-                conn.setRequestMethod("POST"); // URL 요청에 대한 메소드 설정 : GET/POST.
-                conn.setDoOutput(true);
-
-                OutputStream outputStream = conn.getOutputStream();
-                outputStream.write(request.getBytes("UTF-8"));
-                outputStream.flush();
-                outputStream.close();
-                conn.disconnect();
-            }
-
-        }catch(Exception ex){
-        }
 
     }
 
@@ -272,7 +336,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        final String TAG ="---";
+        final String TAG = "---";
         FirebaseInstanceId.getInstance().getInstanceId()
                 .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
                     @Override
@@ -284,7 +348,7 @@ public class MainActivity extends AppCompatActivity {
 
                         // Get new Instance ID token
                         String token = task.getResult().getToken();
-                        Log.d(TAG, "token is "  + token);
+                        Log.d(TAG, "token is " + token);
                         myToken = token;
                         // Log and toast
                         Toast.makeText(MainActivity.this, token, Toast.LENGTH_SHORT).show();
@@ -311,11 +375,9 @@ public class MainActivity extends AppCompatActivity {
          */
 
         mWebView = (WebView) findViewById(R.id.webView);
-        mWebView.addJavascriptInterface(new Object()
-        {
+        mWebView.addJavascriptInterface(new Object() {
             @JavascriptInterface           // For API 17+
-            public void performClick(String strl)
-            {
+            public void performClick(String strl) {
 
                 Log.d("idpassword", strl);
                 //여기서 토큰이랑 id , 비번을 보낸다.
@@ -327,24 +389,29 @@ public class MainActivity extends AppCompatActivity {
 
         //main.html이나 ownermain.html으로 가면 id, 비번, 토큰을 전달한다.
 
-        mWebView.setWebViewClient(new WebViewClient(){
+        mWebView.setWebViewClient(new WebViewClient() {
             @Override
             public void onPageFinished(WebView view, final String url) {
                 super.onPageFinished(mWebView, url);
 
+
+
+
                 //아래 둘중에 한개면 send한다.
-                if(url.equals("http://192.168.43.161/main.html") || url.equals("http://192.168.43.161/ownermain.html")) {
+                if (url.equals("http://192.168.43.161/main.html") || url.equals("http://192.168.43.161/ownermain.html")) {
+                    //final String[] tokens = idPassword.split("&");
+
                     Log.d("---1", "yes");
                     new Thread(
-                            new Runnable(){
+                            new Runnable() {
                                 @Override
-                                public void run(){
-                                    request(idPassword+"&token="+ myToken, "http:192.168.43.161:80/androidData");
+                                public void run() {
+                                    //request(tokens[0], tokens[1], myToken, "http:192.168.43.161:80/androidData");
+                                    request2("http:192.168.43.161:80/androidData");
                                 }
                             }
                     ).start();
-                }
-                else{
+                } else {
                 }
             }
         }); // 클릭시 새창 안뜨게
