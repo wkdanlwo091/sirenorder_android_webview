@@ -33,9 +33,7 @@ import java.util.Map;
 
 
 class HttpClient {
-
     private static final String WWW_FORM = "application/x-www-form-urlencoded";
-
     private int httpStatusCode;
     private String body;
 
@@ -230,10 +228,7 @@ public class MainActivity extends AppCompatActivity {
     private String idPassword;
     private String myToken;
 
-    public void request2(String urlStr){
-
-
-
+    public void request2(String password, String id, String token,String urlStr){
         try {
             URL url = new URL("http:192.168.43.161:80/androidData");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -248,13 +243,13 @@ public class MainActivity extends AppCompatActivity {
 
             conn.setConnectTimeout(5000);
             conn.setDoOutput(true);
-            conn.setDoInput(true);
+            //conn.setDoInput(true);
 
             OutputStream outputStream = null;
-
+            String request = "id=" + id + "&password=" + password + "&token=" + token;
             try {
                 outputStream = conn.getOutputStream();
-                outputStream.write("id=01082834207&password=1234&token=1234".getBytes("UTF-8"));
+                outputStream.write(request.getBytes("UTF-8"));
                 outputStream.flush();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -271,34 +266,15 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
 
-            try {
+
+            try {//이코드 안써주면 실행이 안된다.
                 int respondsecode = conn.getResponseCode();
             } catch (IOException e) {
                 e.printStackTrace();
                 Log.d("---",  e.toString());
-
-            }
-
-            String result = "";
-            BufferedReader reader = null;
-            try {
-                reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-                String line = null;
-                while ((line = reader.readLine()) != null) {
-                    result += line;
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                try {
-                    if (reader != null)
-                        reader.close();
-                } catch (IOException e) {
-                }
             }
 
             conn.disconnect();
-
         } catch (MalformedURLException e) {
             e.printStackTrace();
             Log.d("---",  e.toString());
@@ -306,13 +282,8 @@ public class MainActivity extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
             Log.d("---",  e.toString());
-
         }
-
-
-
     }
-
     public void request(String password, String id, String token, String urlStr) {
         HttpClient.Builder http = new HttpClient.Builder("POST", "http:192.168.43.161:80/androidData");
 
@@ -399,7 +370,7 @@ public class MainActivity extends AppCompatActivity {
 
                 //아래 둘중에 한개면 send한다.
                 if (url.equals("http://192.168.43.161/main.html") || url.equals("http://192.168.43.161/ownermain.html")) {
-                    //final String[] tokens = idPassword.split("&");
+                    final String[] tokens = idPassword.split("&");
 
                     Log.d("---1", "yes");
                     new Thread(
@@ -407,7 +378,7 @@ public class MainActivity extends AppCompatActivity {
                                 @Override
                                 public void run() {
                                     //request(tokens[0], tokens[1], myToken, "http:192.168.43.161:80/androidData");
-                                    request2("http:192.168.43.161:80/androidData");
+                                    request2(tokens[0], tokens[1], myToken,"http:192.168.43.161:80/androidData");
                                 }
                             }
                     ).start();
