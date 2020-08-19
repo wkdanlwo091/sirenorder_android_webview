@@ -110,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
     }
 }
 
-/*
+
     public void setGpsConfigSettings(){
 
         final Context context =  MainActivity.this;//mainactivity의 context를 가져온다.
@@ -147,17 +147,17 @@ public class MainActivity extends AppCompatActivity {
                 Manifest.permission.ACCESS_COARSE_LOCATION
         },0);
     }
-*/
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
 
-        //setGpsConfigSettings();
+        setGpsConfigSettings();
 
 
-        //setRequestPermission();
+        setRequestPermission();
 
 
 
@@ -201,7 +201,6 @@ public class MainActivity extends AppCompatActivity {
         mWebView.addJavascriptInterface(new Object() {
                         @JavascriptInterface           // For API 17+
                         public void performClick(String strl) {
-                            Log.d("---" , "yesyes");
                             Log.d("idpassword", strl);
                             //여기서 토큰이랑 id , 비번을 보낸다.
 
@@ -223,18 +222,26 @@ public class MainActivity extends AppCompatActivity {
 
                 //아래 둘중에 한개의 페이지에 들어오면 androidData로 id, password, 토큰을 쪼개서 보낸다.
                 if (url.equals("http://192.168.43.161/main.html") || url.equals("http://192.168.43.161/ownermain.html")) {
-                    final String[] tokens = idPassword.split("&");
 
-                    Log.d("---1", "yes");
-                    new Thread(
-                            new Runnable() {
-                                @Override
-                                public void run() {
-                                    //request(tokens[0], tokens[1], myToken, "http:192.168.43.161:80/androidData");
-                                    request2(tokens[0], tokens[1], myToken,"http://192.168.43.161/androidData");
+
+                    if(idPassword == null){//id 세션이 남아있어서 자동로그인 된경우
+
+                    }else if(idPassword != null){//처음 들어간 경우
+                        final String[] tokens = idPassword.split("&");
+                        Log.d("idpassword", idPassword);
+                        Log.d("---1", "yes");
+                        new Thread(
+                                new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        //request(tokens[0], tokens[1], myToken, "http:192.168.43.161:80/androidData");
+                                        request2(tokens[0], tokens[1], myToken,"http://192.168.43.161/androidData");
+                                    }
                                 }
-                            }
-                    ).start();
+                        ).start();
+
+                    }
+
                 } else {
                 }
             }
@@ -266,7 +273,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         출처: https://soulduse.tistory.com/59 [프로그래밍좀비]
-        mWebView.loadUrl("http://192.168.43.161/logout.html"); // 웹뷰에 표시할 웹사이트 주소, 웹뷰 시작   aws : 54.193.173.207
+        mWebView.loadUrl("http://192.168.43.161"); // 웹뷰에 표시할 웹사이트 주소, 웹뷰 시작   aws : 54.193.173.207
 
         /*
         mWebView.addJavascriptInterface(new Object()
