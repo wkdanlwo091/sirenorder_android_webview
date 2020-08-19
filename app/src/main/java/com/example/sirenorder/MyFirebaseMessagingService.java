@@ -1,5 +1,4 @@
 package com.example.sirenorder;
-
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -22,7 +21,6 @@ import java.util.Map;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
     private String TAG = "---";
-
     @Override
     public void onNewToken(String refreshedToken) {// onNewToken이란 새 토큰이 생성될 때마다 onNewToken 콜백이 호출됩니다.
 
@@ -30,13 +28,14 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         Log.e(TAG, "Refreshed token: " + refreshedToken);
         sendRegistrationToServer(refreshedToken);
     }
-
     private void sendRegistrationToServer(String token) {
         Log.e(TAG, "here ! sendRegistrationToServer! token is " + token);
     }
-
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {//메시지 받으면
+
+        //notification과 데이터 받는 것은 다르다.
+
         Log.d("fcmlog", "eee");
         Log.d(TAG, "From: " + remoteMessage.getFrom());
         Log.d(TAG, "From: " + remoteMessage.getData());
