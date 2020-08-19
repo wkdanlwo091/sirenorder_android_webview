@@ -3,7 +3,6 @@ package com.example.sirenorder;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-
 import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -45,23 +44,34 @@ public class MainActivity extends AppCompatActivity {
     private String idPassword;
     private String myToken;
 
+    //아마존 웹서버에 httpconnection 열기
     public void request2(String password, String id, String token,String urlStr){
             try {
-                        URL url = new URL("http://54.193.173.207/androidData");
+                        URL url = new URL("http://192.168.43.161/androidData");
                         //httpconnection 열기
                         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                        //아래의 Content-Type이  key-value&key=value.. 이런 형식으로 전달된다.
                         conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+
+                        //post로 보내겠다.
                         try {
                             conn.setRequestMethod("POST");
                         } catch (ProtocolException e) {
                             e.printStackTrace();
                             Log.d("---",  e.toString());
             }
+
+            //5초 안에 연결하겠다.
             conn.setConnectTimeout(5000);
             conn.setDoOutput(true);
             //conn.setDoInput(true);
+
+                //outputstream을 통해서 id와 password, token을 보내겠다. type은 utf-8
             OutputStream outputStream = null;
             String request = "id=" + id + "&password=" + password + "&token=" + token;
+
+
+            //보낸고 outputstream을 닫는다.
             try {
                 outputStream = conn.getOutputStream();
                 outputStream.write(request.getBytes("UTF-8"));
@@ -92,20 +102,17 @@ public class MainActivity extends AppCompatActivity {
             conn.disconnect();
         } catch (MalformedURLException e) {
             e.printStackTrace();
-            Log.d("---",  e.toString());
+        Log.d("---",  e.toString());
 
-        } catch (IOException e) {
-            e.printStackTrace();
-            Log.d("---",  e.toString());
-        }
+    } catch (IOException e) {
+        e.printStackTrace();
+        Log.d("---",  e.toString());
     }
+}
 
-    public void setGpsSettings(){
+/*
+    public void setGpsConfigSettings(){
 
-        /*
-         * location permission setting으로 가는 부분
-         *
-         * */
         final Context context =  MainActivity.this;//mainactivity의 context를 가져온다.
 
         //gps에 관한 세팅 alert를 준다.
@@ -133,21 +140,26 @@ public class MainActivity extends AppCompatActivity {
         alertDialog.show();
 
     }
+
+    public void setRequestPermission(){
+        ActivityCompat.requestPermissions(this, new String[]{
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+        },0);
+    }
+*/
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
 
-        //gps가 안 켜진 경우 gps를 키기;
-        setGpsSettings();
+        //setGpsConfigSettings();
 
 
-        //이 앱을 킬 때마다 위치 허용 물어보기
-        ActivityCompat.requestPermissions(this, new String[]{
-                Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-        },0);
+        //setRequestPermission();
+
+
 
 
 
@@ -182,42 +194,35 @@ public class MainActivity extends AppCompatActivity {
         // 웹뷰 시작
         mWebView = (WebView) findViewById(R.id.webView);
 
-
-        /*
-        mWebView.setWebViewClient(new WebViewClient(){
-            @Override
-                public void doUpdateVisitedHistory(WebView view, String url, boolean isReload) {
-                //이 함수는 url이 변할 때마다 call 된다.
+                //아래에서 web의 로그인 페이지에서 performclick을 누르면 strl을 받아온다.
                 //
-                    super.doUpdateVisitedHistory(view, url, isReload);
-                    Log.d(TAG,"setWebViewClient changed ");
+        mWebView.getSettings().setJavaScriptEnabled(true);//이거 까먹어서 시간 너무 썼다. 이걸 써줘야지 아래 addJavascriptInterface가 작동한다.
+
+        mWebView.addJavascriptInterface(new Object() {
+                        @JavascriptInterface           // For API 17+
+                        public void performClick(String strl) {
+                            Log.d("---" , "yesyes");
+                            Log.d("idpassword", strl);
+                            //여기서 토큰이랑 id , 비번을 보낸다.
+
+                    idPassword = strl;
                 }
-            }
-        );
-         */
-
-                mWebView = (WebView) findViewById(R.id.webView);
-                mWebView.addJavascriptInterface(new Object() {
-                    @JavascriptInterface           // For API 17+
-                    public void performClick(String strl) {
-
-                        Log.d("idpassword", strl);
-                //여기서 토큰이랑 id , 비번을 보낸다.
-
-                idPassword = strl;
-
-            }
-        }, "ok");
+            }, "ok");
 
         //main.html이나 ownermain.html으로 가면 id, 비번, 토큰을 전달한다.
 
+
+        //owner도 일반 유저도 안드로이드 어플을 사용 할 수 있다.
         mWebView.setWebViewClient(new WebViewClient() {
+
+
+            //특정 url 이 열렸을 때
             @Override
             public void onPageFinished(WebView view, final String url) {
                 super.onPageFinished(mWebView, url);
 
-                //아래 둘중에 한개면 send한다.
-                if (url.equals("http://54.193.173.207/main.html") || url.equals("http://54.193.173.207/ownermain.html")) {
+                //아래 둘중에 한개의 페이지에 들어오면 androidData로 id, password, 토큰을 쪼개서 보낸다.
+                if (url.equals("http://192.168.43.161/main.html") || url.equals("http://192.168.43.161/ownermain.html")) {
                     final String[] tokens = idPassword.split("&");
 
                     Log.d("---1", "yes");
@@ -226,7 +231,7 @@ public class MainActivity extends AppCompatActivity {
                                 @Override
                                 public void run() {
                                     //request(tokens[0], tokens[1], myToken, "http:192.168.43.161:80/androidData");
-                                    request2(tokens[0], tokens[1], myToken,"http://54.193.173.207/androidData");
+                                    request2(tokens[0], tokens[1], myToken,"http://192.168.43.161/androidData");
                                 }
                             }
                     ).start();
@@ -257,11 +262,11 @@ public class MainActivity extends AppCompatActivity {
         mWebSettings.setBuiltInZoomControls(false); // 화면 확대 축소 허용 여부
         mWebSettings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN); // 컨텐츠 사이즈 맞추기
         mWebSettings.setCacheMode(WebSettings.LOAD_NO_CACHE); // 브라우저 캐시 허용 여부
-        mWebSettings.setDomStorageEnabled(true); // 로컬저장소 허용 여부
+        mWebSettings.setDomStorageEnabled(true); // 로컬저장소 허용 여부 ----> 웹에서 쓴 데이터 읽기
 
 
         출처: https://soulduse.tistory.com/59 [프로그래밍좀비]
-        mWebView.loadUrl("http://54.193.173.207"); // 웹뷰에 표시할 웹사이트 주소, 웹뷰 시작   aws : 54.193.173.207
+        mWebView.loadUrl("http://192.168.43.161/logout.html"); // 웹뷰에 표시할 웹사이트 주소, 웹뷰 시작   aws : 54.193.173.207
 
         /*
         mWebView.addJavascriptInterface(new Object()
