@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
@@ -18,6 +19,7 @@ import android.view.View;
 import android.webkit.GeolocationPermissions;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -168,8 +170,9 @@ public class MainActivity extends AppCompatActivity {
             double latitude = gpsTracker.getLatitude();
             double longitude = gpsTracker.getLongitude();
 
+            mWebView.loadUrl("javascript:setAndroidGps('"+latitude+"','"+longitude+"')");
 
-            //여기서 spring으로 데이터를 보낸다.
+            //여기서 web front로 데이터를 보낸다.
         }else{
             gpsTracker.showSettingsAlert();
         }
@@ -181,10 +184,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //버튼을 누르면 스프링 웹서버에 gps를 보낸다.
-        myButton = (Button)findViewById(R.id.buttonId);
         //setGpsConfigSettings();
         //setRequestPermission();
+
+
+        myButton = (Button)findViewById(R.id.buttonId);
+
+        //버튼은 숨김 상태이다. main이나 owner main에 들어가면 버튼이 생긴다.
+        myButton.setVisibility(View.GONE);
 
 
 
@@ -255,6 +262,8 @@ public class MainActivity extends AppCompatActivity {
         mWebView.setWebViewClient(new WebViewClient() {
 
 
+
+
             //특정 url 이 열렸을 때
             @Override
             public void onPageFinished(WebView view, final String url) {
@@ -282,7 +291,16 @@ public class MainActivity extends AppCompatActivity {
 
                     }
 
+                    //여기 url에 들어오면 gps button을 띄우고
+                    if(url.equals("http://192.168.43.161/main.html")){
+                        myButton.setVisibility(View.VISIBLE);
+
+                    }
+
                 } else {
+                    //위의 url의 조건에 맞지 않으면 gps button을 지운다.
+                    myButton.setVisibility(View.GONE);
+
                 }
             }
         }); // 클릭시 새창 안뜨게
