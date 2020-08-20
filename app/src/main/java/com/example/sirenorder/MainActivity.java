@@ -169,9 +169,8 @@ public class MainActivity extends AppCompatActivity {
         if(gpsTracker.canGetLocation()){
             double latitude = gpsTracker.getLatitude();
             double longitude = gpsTracker.getLongitude();
-
             mWebView.loadUrl("javascript:setAndroidGps('"+latitude+"','"+longitude+"')");
-
+            Log.d("getLocation", "getLocation");
             //여기서 web front로 데이터를 보낸다.
         }else{
             gpsTracker.showSettingsAlert();
@@ -261,16 +260,13 @@ public class MainActivity extends AppCompatActivity {
         //owner도 일반 유저도 안드로이드 어플을 사용 할 수 있다.
         mWebView.setWebViewClient(new WebViewClient() {
 
-
-
-
             //특정 url 이 열렸을 때
             @Override
             public void onPageFinished(WebView view, final String url) {
                 super.onPageFinished(mWebView, url);
 
                 //아래 둘중에 한개의 페이지에 들어오면 androidData로 id, password, 토큰을 쪼개서 보낸다.
-                if (url.equals("http://192.168.43.161/main.html") || url.equals("http://192.168.43.161/ownermain.html")) {
+                if (url.equals("http://172.30.1.60/main.html") || url.equals("http://172.30.1.60/ownermain.html")) {
 
 
                     if(idPassword == null){//id 세션이 남아있어서 자동로그인 된경우
@@ -284,7 +280,7 @@ public class MainActivity extends AppCompatActivity {
                                     @Override
                                     public void run() {
                                         //request(tokens[0], tokens[1], myToken, "http:192.168.43.161:80/androidData");
-                                        request2(tokens[0], tokens[1], myToken,"http://192.168.43.161/androidData");
+                                        request2(tokens[0], tokens[1], myToken,"http://172.30.1.60/androidData");
                                     }
                                 }
                         ).start();
@@ -292,14 +288,13 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                     //여기 url에 들어오면 gps button을 띄우고
-                    if(url.equals("http://192.168.43.161/main.html")){
+                    if(url.equals("http://172.30.1.60/main.html")){
                         myButton.setVisibility(View.VISIBLE);
 
                     }
 
                 } else {
                     //위의 url의 조건에 맞지 않으면 gps button을 지운다.
-                    myButton.setVisibility(View.GONE);
 
                 }
             }
@@ -331,7 +326,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         출처: https://soulduse.tistory.com/59 [프로그래밍좀비]
-        mWebView.loadUrl("http://192.168.43.161"); // 웹뷰에 표시할 웹사이트 주소, 웹뷰 시작   aws : 54.193.173.207
+        mWebView.loadUrl("http://172.30.1.60"); // 웹뷰에 표시할 웹사이트 주소, 웹뷰 시작   aws : 54.193.173.207
 
         /*
         mWebView.addJavascriptInterface(new Object()
